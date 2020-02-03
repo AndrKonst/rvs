@@ -6,7 +6,14 @@
         <title>Incrementer</title>
     </head>
     <body>
-        <h1>Введите натуральное число\n</h1>
+        <h1>Введите натуральное число</h1>
+        <div>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Обработать">
+            </form>
+        </div>
         <h1>{{output_str}}</h1>
     </body>
 </html>
