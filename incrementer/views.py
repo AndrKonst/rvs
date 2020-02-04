@@ -9,6 +9,9 @@ def increment(request):
         nf = InputNum_Form(request.POST)
         if nf.is_valid():
             num = nf.cleaned_data['input_num_form']
+            if num < 0:
+                output_str = 'Число {} меньше 0. Введите натуральное число'.format(num)
+                return render(request, 'incrementer/increment.html', {'output_str': output_str, 'form': nf})
             for used_num in Num.objects.all():
                 if num == used_num.num:
                     er = Error_log(err='Error_1', number=used_num)
