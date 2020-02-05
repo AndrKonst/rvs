@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Num(models.Model):
-    num = models.PositiveIntegerField()
+    num = models.PositiveIntegerField(primary_key=True)
 
 class Error_log(models.Model):
     err = models.CharField(max_length=7)
