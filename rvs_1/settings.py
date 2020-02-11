@@ -81,7 +81,7 @@ DATABASES = {
         'USER': os.environ.get('RVS_USER'),
         'PASSWORD': os.environ.get('RVS_PASS'),
         'HOST': os.environ.get('RVS_HOST'),
-        'PORT': os.environ.get('RVS_PORTls'),
+        'PORT': os.environ.get('RVS_PORT'),
     }
 }
 
