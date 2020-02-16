@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:alpine
+    restart: always
+    container_name: db
+    environment:
+      - POSTGRES_USER=${RVS_DB_USER}
+      - POSTGRES_PASSWORD=${RVS_DB_USER}
+      - POSTGRES_DB=${RVS_DB_NAME}
+    expose:
+      - ${RVS_DB_PORT}
+    ports:
+    - ${RVS_DB_PORT}:${RVS_DB_PORT}
+
+  server:
+    build: web
+    container_name: web
+    environment:
+      - RVS_DB_NAME=${RVS_DB_NAME}
+      - RVS_DB_PORT=${RVS_DB_PORT}
+      - RVS_DB_HOST=${RVS_DB_HOST}
+      - RVS_DB_USER=${RVS_DB_USER}
+      - RVS_DB_PASS=${RVS_DB_USER}
+    ports:
+      - ${APP_PORT}:${APP_PORT}
+    links:
+      - db
+    command: start_server_script.sh
+    depends_on:
+      - db

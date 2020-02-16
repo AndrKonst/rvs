@@ -78,10 +78,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': os.environ.get('RVS_DB_NAME'),
-        'USER': os.environ.get('RVS_USER'),
-        'PASSWORD': os.environ.get('RVS_PASS'),
-        'HOST': os.environ.get('RVS_HOST'),
-        'PORT': os.environ.get('RVS_PORT'),
+        'USER': os.environ.get('RVS_DB_USER'),
+        'PASSWORD': os.environ.get('RVS_DB_PASS'),
+        'HOST': os.environ.get('RVS_DB_HOST'),
+        'PORT': os.environ.get('RVS_DB_PORT'),
     }
 }
 
