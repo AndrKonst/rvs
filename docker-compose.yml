@@ -11,8 +11,6 @@ services:
       - POSTGRES_DB=${RVS_DB_NAME}
     expose:
       - ${RVS_DB_PORT}
-    ports:
-    - ${RVS_DB_PORT}:${RVS_DB_PORT}
 
   server:
     build: web
@@ -27,6 +25,5 @@ services:
       - ${APP_PORT}:${APP_PORT}
     links:
       - db
-    command: start_server_script.sh
     depends_on:
       - db

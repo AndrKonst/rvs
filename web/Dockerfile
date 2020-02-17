@@ -11,6 +11,10 @@ RUN apk add postgresql-libs &&\
 
 COPY . .
 
+RUN chmod +x ./start_server_script
+
 EXPOSE 8000
 
-CMD python manage.py runserver 0.0.0.0:8000
+CMD ./start_server_script
+#ENTRYPOINT ['python3', 'manage.py','migrate','--noinput']
+#CMD ['python3', 'manage.py', 'runserver', '0.0.0.0:8000']
