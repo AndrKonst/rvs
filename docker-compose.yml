@@ -21,7 +21,8 @@ services:
       - RVS_DB_HOST=${RVS_DB_HOST}
       - RVS_DB_USER=${RVS_DB_USER}
       - RVS_DB_PASS=${RVS_DB_USER}
-      - APP_IP="0.0.0.0"
+      - APP_PORT=${APP_PORT}
+      - APP_IP=${APP_IP}
     ports:
       - ${APP_PORT}:${APP_PORT}
     links:
