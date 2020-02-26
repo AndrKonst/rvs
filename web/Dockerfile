@@ -13,6 +13,6 @@ COPY . .
 
 RUN chmod +x ./start_server_script
 
-EXPOSE 8000
+EXPOSE $APP_PORT
 
 CMD ./start_server_script
