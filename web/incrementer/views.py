@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.db.models import F
+from django.views.decorators.csrf import csrf_exempt
 from .forms import InputNum_Form
 from .models import Num, Error_log
 
@@ -33,6 +34,13 @@ def increment(request):
     else:
         nf = InputNum_Form()
         return render(request, 'incrementer/increment.html', {'form': nf})
+
+@csrf_exempt
+def curl(request):
+    if request.method == 'POST':
+        return HttpResponse('got Post\n')
+    else:
+        return HttpResponse('not got POST\n')
 
 
 def clear_db(request):
