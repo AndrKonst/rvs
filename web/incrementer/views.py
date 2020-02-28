@@ -5,6 +5,8 @@ from django.views.decorators.csrf import csrf_exempt
 from .forms import InputNum_Form
 from .models import Num, Error_log
 
+import psycopg2 as sql
+import os, json
 
 def increment(request):
     if request.method == 'POST':
@@ -37,9 +39,20 @@ def increment(request):
 
 @csrf_exempt
 def curl(request):
+    conn = sql.connect(dbname=os.environ.get('RVS_DB_NAME'),
+                       user=os.environ.get('RVS_DB_USER'),
+                       password=os.environ.get('RVS_DB_PASS'),
+                       host=os.environ.get('RVS_DB_HOST'),
+                       port=os.environ.get('RVS_DB_PORT'))
+    cur = conn.cursor()
     if request.method == 'POST':
+        in_data = json.loads(request.body)
+        cur.close()
+        conn.close()
         return HttpResponse('got Post\n')
     else:
+        cur.close()
+        conn.close()
         return HttpResponse('not got POST\n')
 
 
