@@ -1,17 +1,21 @@
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import Num
 
 import psycopg2 as sql
 import os, json
 
 @csrf_exempt
-def curl(request):
+def increment(request):
     # http method check
     if request.method == 'POST':
         in_data = json.loads(request.body)
 
         # number check
+        num = None
+        # check for 1 number
+        if len(in_data) > 1:
+            ans = {'msg': 'Entered more then 1 number'}
+            return HttpResponse(JsonResponse(ans))
         for i in in_data.values():
             if type(i) != int:
                 ans = {'msg': 'Wrong type of input data'}
@@ -19,6 +23,7 @@ def curl(request):
             if i < 0:
                 ans = {'msg': 'input number must be positive'}
                 return HttpResponse(JsonResponse(ans))
+            num = i
 
         # db connection
         try:
@@ -43,9 +48,10 @@ def curl(request):
                      date_time TIMESTAMP )')
         conn.commit()
 
-        # check for conflicts
-        for num in in_data.values():
-            cur.execute('SELECT num, num-1 FROM nums WHERE num=%s', (num,))
+
+        #check for conflicts
+        if num:
+            cur.execute('SELECT num FROM nums WHERE num=%s or num=%s+1', (num, num))
             db_nums = cur.fetchone()
             if not db_nums:
                 cur.execute('INSERT INTO nums VALUES (%s)', (num,))
@@ -62,14 +68,18 @@ def curl(request):
                 conn.close()
                 ans = {'msg': 'Conflict 1. Number {} has already been processed'.format(num,)}
                 return HttpResponse(JsonResponse(ans))
-            elif num == db_nums[1]:
+            elif num + 1 == db_nums[0]:
                 cur.execute('INSERT INTO incrementer_conflicts (conflict_type, number, date_time) \
-                             VALUES (2, %s, now())', (num,))
+                             VALUES (2, %s, now())', (num + 1,))
                 conn.commit()
                 cur.close()
                 conn.close()
                 ans = {'msg': 'Conflict 2. Number {} is 1 less then the previously processed number'.format(num,)}
                 return HttpResponse(JsonResponse(ans))
+        else:
+            ans = {'msg': 'Number not entered'}
+            return HttpResponse(JsonResponse(ans))
+
 
     # actions if method not post
     else:
@@ -78,7 +88,25 @@ def curl(request):
 
 
 def clear_db(request):
-    for t in Num.objects.all():
-        t.delete()
-    ans = {'msg': 'Db cleared'}
+    # db connection
+    try:
+        conn = sql.connect(dbname=os.environ.get('RVS_DB_NAME'),
+                           user=os.environ.get('RVS_DB_USER'),
+                           password=os.environ.get('RVS_DB_PASS'),
+                           host=os.environ.get('RVS_DB_HOST'),
+                           port=os.environ.get('RVS_DB_PORT'))
+    except sql.OperationalError as err:
+        ans = {'msg': 'Connection db error: {}'.format(err)}
+        return HttpResponse(JsonResponse(ans))
+    cur = conn.cursor()
+
+    # drop table nums to clear db
+    cur.execute('DROP TABLE IF EXISTS nums CASCADE')
+    cur.execute('DROP TABLE IF EXISTS incrementer_conflicts CASCADE')
+
+    conn.commit()
+
+    cur.close()
+    conn.close()
+    ans = {'msg': 'Tables dropped'}
     return HttpResponse(JsonResponse(ans))
