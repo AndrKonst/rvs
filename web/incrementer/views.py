@@ -32,10 +32,11 @@ def increment(request):
                                password=os.environ.get('RVS_DB_PASS'),
                                host=os.environ.get('RVS_DB_HOST'),
                                port=os.environ.get('RVS_DB_PORT'))
+            cur = conn.cursor()
+
         except sql.OperationalError as err:
             ans = {'msg': 'Connection db error: {}'.format(err)}
             return JsonResponse(ans)
-        cur = conn.cursor()
 
         # creation tables
         cur.execute('CREATE TABLE IF NOT EXISTS nums (num INTEGER PRIMARY KEY)')
@@ -56,24 +57,18 @@ def increment(request):
             if not db_nums:
                 cur.execute('INSERT INTO nums VALUES (%s)', (num,))
                 conn.commit()
-                cur.close()
-                conn.close()
                 ans = {'msg': 'Number {} processed'.format(num)}
                 return JsonResponse(ans)
             elif num == db_nums[0]:
                 cur.execute('INSERT INTO incrementer_conflicts (conflict_type, number, date_time) \
                              VALUES (1, %s, now())', (num,))
                 conn.commit()
-                cur.close()
-                conn.close()
                 ans = {'msg': 'Conflict 1. Number {} has already been processed'.format(num,)}
                 return JsonResponse(ans)
             elif num + 1 == db_nums[0]:
                 cur.execute('INSERT INTO incrementer_conflicts (conflict_type, number, date_time) \
                              VALUES (2, %s, now())', (num + 1,))
                 conn.commit()
-                cur.close()
-                conn.close()
                 ans = {'msg': 'Conflict 2. Number {} is 1 less then the previously processed number'.format(num,)}
                 return JsonResponse(ans)
         else:
@@ -95,10 +90,11 @@ def clear_db(request):
                            password=os.environ.get('RVS_DB_PASS'),
                            host=os.environ.get('RVS_DB_HOST'),
                            port=os.environ.get('RVS_DB_PORT'))
+        cur = conn.cursor()
+
     except sql.OperationalError as err:
         ans = {'msg': 'Connection db error: {}'.format(err)}
         return JsonResponse(ans)
-    cur = conn.cursor()
 
     # drop table nums to clear db
     cur.execute('DROP TABLE IF EXISTS nums CASCADE')
@@ -106,7 +102,5 @@ def clear_db(request):
 
     conn.commit()
 
-    cur.close()
-    conn.close()
     ans = {'msg': 'Tables dropped'}
     return JsonResponse(ans)
