@@ -25,7 +25,7 @@ SECRET_KEY = 'us%dk_+rw&_2lts^=tkcvhsyew6jdrrfm6!az92wab-$fyf9!2'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['node-08.hse', 'node-02.hse', 'node-10.hse', 'node-05.hse', '127.0.0.1']
 
 
 # Application definition

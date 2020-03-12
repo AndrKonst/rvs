@@ -15,14 +15,14 @@ def increment(request):
         # check for 1 number
         if len(in_data) > 1:
             ans = {'msg': 'Entered more then 1 number'}
-            return HttpResponse(JsonResponse(ans))
+            return JsonResponse(ans)
         for i in in_data.values():
             if type(i) != int:
                 ans = {'msg': 'Wrong type of input data'}
-                return HttpResponse(JsonResponse(ans))
+                return JsonResponse(ans)
             if i < 0:
                 ans = {'msg': 'input number must be positive'}
-                return HttpResponse(JsonResponse(ans))
+                return JsonResponse(ans)
             num = i
 
         # db connection
@@ -34,7 +34,7 @@ def increment(request):
                                port=os.environ.get('RVS_DB_PORT'))
         except sql.OperationalError as err:
             ans = {'msg': 'Connection db error: {}'.format(err)}
-            return HttpResponse(JsonResponse(ans))
+            return JsonResponse(ans)
         cur = conn.cursor()
 
         # creation tables
@@ -59,7 +59,7 @@ def increment(request):
                 cur.close()
                 conn.close()
                 ans = {'msg': 'Number {} processed'.format(num)}
-                return HttpResponse(JsonResponse(ans))
+                return JsonResponse(ans)
             elif num == db_nums[0]:
                 cur.execute('INSERT INTO incrementer_conflicts (conflict_type, number, date_time) \
                              VALUES (1, %s, now())', (num,))
@@ -67,7 +67,7 @@ def increment(request):
                 cur.close()
                 conn.close()
                 ans = {'msg': 'Conflict 1. Number {} has already been processed'.format(num,)}
-                return HttpResponse(JsonResponse(ans))
+                return JsonResponse(ans)
             elif num + 1 == db_nums[0]:
                 cur.execute('INSERT INTO incrementer_conflicts (conflict_type, number, date_time) \
                              VALUES (2, %s, now())', (num + 1,))
@@ -75,18 +75,18 @@ def increment(request):
                 cur.close()
                 conn.close()
                 ans = {'msg': 'Conflict 2. Number {} is 1 less then the previously processed number'.format(num,)}
-                return HttpResponse(JsonResponse(ans))
+                return JsonResponse(ans)
         else:
             ans = {'msg': 'Number not entered'}
-            return HttpResponse(JsonResponse(ans))
+            return JsonResponse(ans)
 
 
     # actions if method not post
     else:
         ans = {'msg': 'HTTP method not POST'}
-        return HttpResponse(JsonResponse(ans))
+        return JsonResponse(ans)
 
-
+@csrf_exempt
 def clear_db(request):
     # db connection
     try:
@@ -97,7 +97,7 @@ def clear_db(request):
                            port=os.environ.get('RVS_DB_PORT'))
     except sql.OperationalError as err:
         ans = {'msg': 'Connection db error: {}'.format(err)}
-        return HttpResponse(JsonResponse(ans))
+        return JsonResponse(ans)
     cur = conn.cursor()
 
     # drop table nums to clear db
@@ -109,4 +109,4 @@ def clear_db(request):
     cur.close()
     conn.close()
     ans = {'msg': 'Tables dropped'}
-    return HttpResponse(JsonResponse(ans))
+    return JsonResponse(ans)
