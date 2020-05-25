@@ -57,7 +57,7 @@ def increment(request):
             if not db_nums:
                 cur.execute('INSERT INTO nums VALUES (%s)', (num,))
                 conn.commit()
-                ans = {'msg': 'Number {} processed'.format(num)}
+                ans = {'msg': num + 1}
                 return JsonResponse(ans)
             elif num == db_nums[0]:
                 cur.execute('INSERT INTO incrementer_conflicts (conflict_type, number, date_time) \

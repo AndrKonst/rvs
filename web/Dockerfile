@@ -6,11 +6,11 @@ COPY requirements.txt requirements.txt
 
 ENV RVS_DB_NAME 'rvs_incrementer_db'
 ENV RVS_DB_PORT '5432'
-ENV RVS_DB_HOST 172.18.0.2
+ENV RVS_DB_HOST 127.0.0.1
 ENV RVS_DB_USER 'rvs_user'
 ENV RVS_DB_PASS 'rvs_user'
-ENV RVS_APP_PORT 8000
-ENV RVS_APP_IP 0.0.0.0
+ENV RVS_APP_PORT 8001
+ENV RVS_APP_IP 127.0.0.1
 
 RUN apk add postgresql-libs &&\
     apk add --virtual .build-deps gcc musl-dev postgresql-dev && \
@@ -21,8 +21,8 @@ RUN apk add postgresql-libs &&\
 
 COPY . .
 
-RUN chmod +x ./start_server_script
+#RUN chmod +x ./start_server_script
 
 EXPOSE $RVS_APP_PORT
 
-CMD ./start_server_script
+#CMD ./start_server_script

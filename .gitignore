@@ -2,3 +2,5 @@
 /.idea
 *__pycache__*
 db/
+web/incrementer/__pycache__
+web/rvs_1/__pycache__
